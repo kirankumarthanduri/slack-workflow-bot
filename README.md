@@ -170,16 +170,6 @@ slack-workflow-bot/
 
 ---
 
-## 🗺️ Roadmap
-
-- [ ] Persistent database (PostgreSQL) instead of JSON file
-- [ ] Web dashboard for task management
-- [ ] Multi-workspace support
-- [ ] Slack Block Kit UI for richer interactions
-- [ ] Integration with Jira / Asana for task sync
-
----
-
 ## 👤 Author
 
 **Kirankumar Thanduri** — AI/ML Engineer & Program Manager
@@ -187,13 +177,3 @@ slack-workflow-bot/
 - 🔗 [LinkedIn](https://www.linkedin.com/in/kirankumarthanduri/)
 - 🐙 [GitHub](https://github.com/kirankumarthanduri)
 - 🤖 [AI Readiness Assessor](https://avgs928mfw4qfc5w9pqjmp.streamlit.app/) — my other AI project
-
----
-
-## 📄 License
-
-MIT License — feel free to use, modify, and share.
-
----
-
-> *Built as a learning project to explore GenAI + workflow automation. Similar tools exist at enterprise scale — this is my hands-on implementation to understand the architecture from the ground up.*
