@@ -1,0 +1,24 @@
+[
+  {
+    "id": 1,
+    "assigned_to": "kiran.thanduri",
+    "description": "Test2",
+    "assigned_by": "U0A1MGJ1GCQ",
+    "due_date": null,
+    "status": "open",
+    "created_at": "2026-05-30T01:54:58.029029",
+    "nudge_count": 0,
+    "last_nudged": null
+  },
+  {
+    "id": 2,
+    "assigned_to": "U0A1MGJ1GCQ",
+    "description": "Review Phase 2",
+    "assigned_by": "U0A1MGJ1GCQ",
+    "due_date": null,
+    "status": "open",
+    "created_at": "2026-05-30T01:55:29.295812",
+    "nudge_count": 0,
+    "last_nudged": null
+  }
+]
