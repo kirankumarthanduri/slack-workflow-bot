@@ -1,6 +1,6 @@
 # 🤖 Slack Workflow Bot
 
-A production-ready Slack bot that automates team workflows using **Rule-based automation** and **Claude AI** — deployed 24/7 on Railway.
+A production-ready Slack bot that automates team workflows using **Rule-based automation** and **Claude AI** — deployed 24/7 on AWS EC2.
 
 Built as a hands-on learning project to explore the combination of workflow automation and generative AI — the same architecture used in enterprise AI decisioning systems.
 
@@ -8,7 +8,7 @@ Built as a hands-on learning project to explore the combination of workflow auto
 
 ## 🔗 Live Demo
 
-> Bot is running live in a Slack workspace. [Request a demo](https://www.linkedin.com/in/kirankumarthanduri/) or deploy your own using the setup guide below.
+> Bot is running live 24/7 in a Slack workspace on AWS EC2. [Request a demo](https://www.linkedin.com/in/kirankumarthanduri/) or deploy your own using the setup guide below.
 
 ---
 
@@ -18,7 +18,7 @@ Built as a hands-on learning project to explore the combination of workflow auto
 - `/task @person description [by deadline]` — assign tasks to teammates
 - `/mytasks` — view your open tasks
 - `/alltasks` — view all team tasks
-- DM `done <task_id>` — mark a task complete
+- `/done <task_id>` — mark a task complete from any channel
 - Automatic nudge DMs for overdue tasks (10am & 3pm weekdays)
 
 ### 🌅 Daily Standups
@@ -73,7 +73,7 @@ This is a working example of **Rule Engine + LLM architecture**:
 | [Anthropic SDK](https://github.com/anthropic/anthropic-sdk-python) | Claude AI integration |
 | [APScheduler](https://github.com/agronholm/apscheduler) | Background job scheduling |
 | [python-dotenv](https://github.com/theskumar/python-dotenv) | Environment variable management |
-| [Railway](https://railway.app) | 24/7 cloud deployment |
+| [AWS EC2](https://aws.amazon.com/ec2/) | 24/7 cloud deployment with systemd |
 
 ---
 
@@ -102,7 +102,7 @@ pip install -r requirements.txt
 5. Under **Event Subscriptions** → Enable → Subscribe to bot events:
    - `app_mention` `message.im`
 6. Under **Slash Commands** → Create:
-   - `/task` `/standup` `/mytasks` `/alltasks` `/summarise` `/digest`
+   - `/task` `/standup` `/mytasks` `/alltasks` `/summarise` `/digest` `/done`
 
 ### 3. Configure environment
 ```bash
@@ -129,13 +129,65 @@ python main.py
 📅  Standup: weekdays 9:00 AM
 ```
 
-### 5. Deploy to Railway
+### 5. Deploy to AWS EC2 (24/7)
 
-1. Push to GitHub
-2. Go to [railway.app](https://railway.app) → New Project → Deploy from GitHub
-3. Select this repo
-4. Add all 5 environment variables in the Variables tab
-5. Railway deploys automatically — bot runs 24/7
+#### Launch EC2 instance
+1. Go to [AWS Console](https://console.aws.amazon.com) → EC2 → Launch Instance
+2. Choose **Amazon Linux 2023** — `t2.micro` (free tier)
+3. Create and download a key pair
+4. Launch the instance
+
+#### Connect and setup
+```bash
+# Connect via EC2 Instance Connect in browser
+# Or SSH: ssh -i "your-key.pem" ec2-user@YOUR_PUBLIC_IP
+
+# Install dependencies
+sudo yum update -y && sudo yum install -y python3-pip python3 git
+
+# Clone repo
+git clone https://github.com/kirankumarthanduri/slack-workflow-bot.git
+cd slack-workflow-bot
+
+# Create virtual environment
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+
+# Add your tokens
+nano .env
+```
+
+#### Run as a systemd service (auto-start on reboot)
+```bash
+sudo nano /etc/systemd/system/slackbot.service
+```
+
+Paste:
+```
+[Unit]
+Description=Slack Workflow Bot
+After=network.target
+
+[Service]
+Type=simple
+User=ec2-user
+WorkingDirectory=/home/ec2-user/slack-workflow-bot
+Environment=PATH=/home/ec2-user/slack-workflow-bot/venv/bin
+ExecStart=/home/ec2-user/slack-workflow-bot/venv/bin/python3 main.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+```
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable slackbot
+sudo systemctl start slackbot
+sudo systemctl status slackbot
+```
 
 ---
 
@@ -151,7 +203,7 @@ slack-workflow-bot/
 │   ├── scheduler.py   # APScheduler jobs — standup, synthesis, nudges, digest
 │   └── tasks.py       # Task CRUD — add, complete, nudge tracking
 ├── main.py            # Entry point
-├── Procfile           # Railway deployment config
+├── Procfile           # Deployment config
 ├── requirements.txt
 ├── .env.example       # Token template
 └── .gitignore
@@ -165,8 +217,18 @@ slack-workflow-bot/
 - **LLM integration** — structuring prompts for consistent, useful AI output
 - **Rule Engine + LLM pattern** — combining deterministic rules with adaptive AI
 - **Background scheduling** — APScheduler for reliable cron-style jobs
-- **Production deployment** — Railway, environment variables, 24/7 uptime
+- **AWS EC2 deployment** — launching instances, systemd services, 24/7 uptime
 - **Enterprise AI concepts** — explainability, auditability, hybrid decisioning
+
+---
+
+## 🗺️ Roadmap
+
+- [ ] Persistent database (PostgreSQL) instead of JSON file
+- [ ] Web dashboard for task management
+- [ ] Multi-workspace support
+- [ ] Slack Block Kit UI for richer interactions
+- [ ] Integration with Jira / Asana for task sync
 
 ---
 
@@ -177,3 +239,13 @@ slack-workflow-bot/
 - 🔗 [LinkedIn](https://www.linkedin.com/in/kirankumarthanduri/)
 - 🐙 [GitHub](https://github.com/kirankumarthanduri)
 - 🤖 [AI Readiness Assessor](https://avgs928mfw4qfc5w9pqjmp.streamlit.app/) — my other AI project
+
+---
+
+## 📄 License
+
+MIT License — feel free to use, modify, and share.
+
+---
+
+> *Built as a learning project to explore GenAI + workflow automation. Similar tools exist at enterprise scale — this is my hands-on implementation to understand the architecture from the ground up.*
